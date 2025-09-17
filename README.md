@@ -2,6 +2,7 @@
 # LZLab03
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/linazunigaliu/Lab03/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/linazunigaliu/Lab03/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of LZLab03 is to ...
