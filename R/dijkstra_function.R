@@ -37,15 +37,25 @@
 #' @export
 dijkstra <- function(wiki_graph, init_node) {
 
+  # Validate graph input
+  if (!all(c("v1", "v2", "w") %in% names(wiki_graph))) {
+    stop("Graph must be a data.frame with columns v1, v2, and w")
+  }
+
   # Get all unique nodes
-  nodes <- sort(unique(c(wiki_graph$v1, wiki_graph$v2)))
+  nodes <- sort(unique(c(as.character(wiki_graph$v1), as.character(wiki_graph$v2))))
   n <- length(nodes)
 
   # distance and visited nodes
-  dist <- stats::setNames(rep(Inf, n), nodes) #starts with infinite because the distance is "unknown"
-  visited <- stats::setNames(rep(FALSE, n), nodes)
+  dist <- stats::setNames(rep(Inf, length(nodes)), nodes) #starts with infinite because the distance is "unknown"
+  visited <- stats::setNames(rep(FALSE, length(nodes)), nodes)
 
-  dist[init_node] <- 0   # distance from init_node to itself
+  # distance from init_node to itself
+  init_node <- as.character(init_node) # force to character
+  if (!(init_node %in% nodes)) {
+    stop("init_node is not in the graph")
+  }
+  dist[init_node] <- 0
 
   for (i in seq_len(n)) {
 
@@ -59,7 +69,12 @@ dijkstra <- function(wiki_graph, init_node) {
 
     # Loop over neighbors
     for (j in seq_len(nrow(neighbors))) {
-      v <- if (neighbors$v1[j] == u) neighbors$v2[j] else neighbors$v1[j]
+      v <- if (neighbors$v1[j] == u) as.character(neighbors$v2[j]) else as.character(neighbors$v1[j])
+
+      # Ensure neighbor exists in dist
+      if (!(v %in% names(dist))) {
+        stop(paste("Neighbor node", v, "not found in graph"))
+      }
 
       if (!visited[v]) {
         alt <- dist[u] + neighbors$weight[j]
@@ -71,6 +86,7 @@ dijkstra <- function(wiki_graph, init_node) {
     }
   }
 
-  return(unname(dist))
+  #return(unname(dist))
+  return(dist)
 
 }
